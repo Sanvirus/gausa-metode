@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gausa metode</title>
+  <script>
+    function solveEquations() {
+      //dabū html ievadītās vērtības
+      const inputMatrix = document.getElementById("input-matrix").value;
+      
+      //pārveido ievadīto matriksu par divdimensionālo array
+      const equations = inputMatrix.split('\n').map(row => row.trim().split(' ').map(Number));
+      
+      // gausa metode
+      const n = equations.length;
+      for (let i = 0; i < n; i++) {
+        // Atrast rindu ar maksimālo vērtību tagadējā kolonā
+        let maxRow = i;
+        for (let j = i + 1; j < n; j++) {
+          if (Math.abs(equations[j][i]) > Math.abs(equations[maxRow][i])) {
+            maxRow = j;
+          }
+        }
+        
+        // samainīt rindas
+        [equations[i], equations[maxRow]] = [equations[maxRow], equations[i]];
+        
+        // Make all elements below the current row in the current column zero
+        for (let j = i + 1; j < n; j++) {
+          const factor = -equations[j][i] / equations[i][i];
+          for (let k = i + 1; k <= n; k++) {
+            equations[j][k] += factor * equations[i][k];
+          }
+          equations[j][i] = 0;
+        }
+      }
+      
+      // Back-substitution to find the solution
+      const solution = new Array(n);
+      for (let i = n - 1; i >= 0; i--) {
+        let sum = 0;
+        for (let j = i + 1; j < n; j++) {
+          sum += equations[i][j] * solution[j];
+        }
+        solution[i] = (equations[i][n] - sum) / equations[i][i];
+      }
+      
+      // parādīt atrisinājumu
+      document.getElementById("result").innerText = `Solution: ${solution.join(", ")}`;
+    }
+  </script>
+</head>
+<body>
+  <h1>Gausa metode</h1>
+  <h2>Sannijs R Bondars P1-2</h2>
+  <p>Raksti tiaki ciparus!</p>
+  <textarea id="input-matrix" rows="5" cols="30" placeholder="Piemērs:1 2 3 -2 6
+        1 -1 -2 -3 8
+        3 2 -1 2 4
+        2 -3 2 1 -8
+"></textarea>
+  <br>
+  <button onclick="solveEquations()">Atrisināt</button>
+  <br>
+  <p id="result"></p>
+</body>
+</html>
